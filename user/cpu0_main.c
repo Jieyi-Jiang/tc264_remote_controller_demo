@@ -142,35 +142,32 @@ int core0_main(void)
                     printf("%d ", uart_receiver.channel[i]);         // 串口输出6个通道数据
                 }
                 printf("\r\n");
+
+                if (500 == uart_receiver.channel[4])
+                {
+                    set_speed(0, 0);
+                    continue;
+                }
+                else if (uart_receiver.channel[4] == 1500)
+                {
+                    set_speed((uart_receiver.channel[1]-1000)*6 + (uart_receiver.channel[3]-1000)*3,
+                            (uart_receiver.channel[1]-1000)*6 - (uart_receiver.channel[3]-1000)*3);
+                }
+                else
+                {
+                    set_speed((uart_receiver.channel[1]-1000)*6, (uart_receiver.channel[1]-1000)*6);
+                }
+                Set_Steer(-(uart_receiver.channel[3]-1000)/8);
             }
             else
             {
+                set_speed(0, 0);
+                Set_Steer(0);
                 printf("Remote control has been disconnected.\r\n"); // 串口输出失控提示
             }
             uart_receiver.finsh_flag = 0;                            // 帧完成标志复位
         }
-        if (1 == uart_receiver.state)
-        {
-            set_speed(0, 0);
-            Set_Steer(0);
-        }
-        if (500 == uart_receiver.channel[4])
-        {
-            set_speed(0, 0);
-            continue;
-        }
-        else if (uart_receiver.channel[4] == 1500)
-        {
-            set_speed((uart_receiver.channel[1]-1000)*6 + (uart_receiver.channel[3]-1000)*5,
-                    (uart_receiver.channel[1]-1000)*6 - (uart_receiver.channel[3]-1000)*5);
-        }
-        else
-        {
-            set_speed((uart_receiver.channel[1]-1000)*6, (uart_receiver.channel[1]-1000)*6);
-        }
-//        set_speed(1000, 0);
-        Set_Steer(-(uart_receiver.channel[0]-1000)/9);
-        system_delay_ms(10);
+//        system_delay_ms(5);
         // 此处编写需要循环执行的代码
     }
 }
